@@ -163,8 +163,6 @@ public class StreamWriteFunctionWrapper<I> implements TestFunctionWrapper<I> {
     }
 
     setupWriteFunction();
-    // handle the bootstrap event
-    coordinator.handleEventFromOperator(0, getNextEvent());
 
     if (asyncCompaction) {
       compactFunctionWrapper.openFunction();
@@ -182,6 +180,11 @@ public class StreamWriteFunctionWrapper<I> implements TestFunctionWrapper<I> {
 
   public WriteMetadataEvent[] getEventBuffer() {
     return this.coordinator.getEventBuffer();
+  }
+
+  @Override
+  public WriteMetadataEvent[] getEventBuffer(long checkpointId) {
+    return this.coordinator.getEventBuffer(checkpointId);
   }
 
   public OperatorEvent getNextEvent() {
@@ -288,10 +291,6 @@ public class StreamWriteFunctionWrapper<I> implements TestFunctionWrapper<I> {
     return this.bucketAssignFunctionContext.isKeyInState(hoodieKey.getRecordKey());
   }
 
-  public boolean isConforming() {
-    return this.writeFunction.isConfirming();
-  }
-
   public boolean isAlreadyBootstrap() throws Exception {
     return this.bootstrapOperator.isAlreadyBootstrap();
   }
@@ -306,6 +305,7 @@ public class StreamWriteFunctionWrapper<I> implements TestFunctionWrapper<I> {
     writeFunction.setOperatorEventGateway(gateway);
     writeFunction.initializeState(this.stateInitializationContext);
     writeFunction.open(conf);
+    writeFunction.setCorrespondent(new MockCorrespondent(this.coordinator));
   }
 
   // -------------------------------------------------------------------------

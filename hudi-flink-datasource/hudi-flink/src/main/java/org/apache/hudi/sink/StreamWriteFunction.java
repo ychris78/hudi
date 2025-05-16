@@ -410,6 +410,7 @@ public class StreamWriteFunction extends AbstractStreamWriteFunction<HoodieFlink
     final List<WriteStatus> writeStatus = writeRecords(instant, bucket.getRecords());
     final WriteMetadataEvent event = WriteMetadataEvent.builder()
         .taskID(taskID)
+        .checkpointId(this.checkpointId)
         .instantTime(instant) // the write instant may shift but the event still use the currentInstant.
         .writeStatus(writeStatus)
         .lastBatch(false)
@@ -446,6 +447,7 @@ public class StreamWriteFunction extends AbstractStreamWriteFunction<HoodieFlink
     }
     final WriteMetadataEvent event = WriteMetadataEvent.builder()
         .taskID(taskID)
+        .checkpointId(checkpointId)
         .instantTime(currentInstant)
         .writeStatus(writeStatus)
         .lastBatch(true)
@@ -457,8 +459,6 @@ public class StreamWriteFunction extends AbstractStreamWriteFunction<HoodieFlink
     this.tracer.reset();
     this.writeClient.cleanHandles();
     this.writeStatuses.addAll(writeStatus);
-    // blocks flushing until the coordinator starts a new instant
-    this.confirming = true;
 
     writeMetrics.endDataFlush();
     writeMetrics.resetAfterCommit();
