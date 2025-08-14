@@ -596,6 +596,10 @@
               <pattern>com.google.protobuf.</pattern>
               <shadedPattern>org.apache.hudi.com.google.protobuf.</shadedPattern>
             </relocation>
+            <relocation>
+              <pattern>org.apache.parquet</pattern>
+              <shadedPattern>org.apache.hudi.org.apache.parquet</shadedPattern>
+            </relocation>
           </relocations>
         </configuration>
       </plugin>
