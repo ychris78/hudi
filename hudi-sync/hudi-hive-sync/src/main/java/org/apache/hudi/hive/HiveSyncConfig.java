@@ -110,6 +110,7 @@ public class HiveSyncConfig extends HoodieSyncConfig {
     HiveConf hiveConf = new HiveConf();
     // HiveConf needs to load Hadoop conf to allow instantiation via AWSGlueClientFactory
     hiveConf.addResource(hadoopConf);
+    hiveConf.addResource("./hive-site.xml");
     setHadoopConf(hiveConf);
     validateParameters();
   }
